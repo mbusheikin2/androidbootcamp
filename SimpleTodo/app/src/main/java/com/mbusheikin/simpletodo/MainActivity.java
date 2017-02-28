@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> itemsAdapter;
     ListView lvItems;
 
+    // Activity lifecycle
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,19 +38,24 @@ public class MainActivity extends AppCompatActivity {
 
         readItems();
 
-        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        lvItems.setAdapter(itemsAdapter);
-
-        setupListViewListener();
+        this.setupListViewAdapter();
+        this.setupListViewListener();
     }
 
     public void onAddItem(View v) {
         EditText etNewItem = (EditText)findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
+
+        // Ignore if there's no text.
+        if (itemText == null || itemText.isEmpty()) {
+            return;
+        }
         itemsAdapter.add(itemText);
         etNewItem.setText("");
         writeItems();
     }
+
+    // Setup
 
     private void setupListViewListener() {
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -69,10 +76,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setupListViewAdapter() {
+        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        lvItems.setAdapter(itemsAdapter);
+    }
+
+    // Helpers
+
     private void showEditTaskForItemAt(int position) {
         String title = items.get(position);
         EditTaskActivity.startActivity(this, title, position);
     }
+
+    // Event handlers
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -98,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Persistence
+
     private void readItems() {
         File filesDir = getFilesDir();
         File todoFile = new File(filesDir, "todo.txt");
@@ -118,4 +136,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-/**/
